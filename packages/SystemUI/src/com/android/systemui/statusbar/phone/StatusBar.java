@@ -221,6 +221,7 @@ import com.android.systemui.statusbar.phone.UnlockMethodCache.OnUnlockMethodChan
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BatteryController.BatteryStateChangeCallback;
 import com.android.systemui.statusbar.policy.BrightnessMirrorController;
+import com.android.systemui.statusbar.policy.BurnInProtectionController;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
@@ -284,6 +285,9 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     private static final String FORCE_SHOW_NAVBAR =
             "lineagesystem:" + LineageSettings.System.FORCE_SHOW_NAVBAR;
+
+    public static final String SYSTEMUI_BURNIN_PROTECTION =
+            "lineagesystem:" + LineageSettings.System.SYSTEMUI_BURNIN_PROTECTION;
 
     private static final String BANNER_ACTION_CANCEL =
             "com.android.systemui.statusbar.banner_action_cancel";
@@ -372,6 +376,8 @@ public class StatusBar extends SystemUI implements DemoMode,
     protected LockscreenWallpaper mLockscreenWallpaper;
     @VisibleForTesting
     protected AutoHideController mAutoHideController;
+
+    private BurnInProtectionController mBurnInProtectionController;
 
     private int mNaturalBarHeight = -1;
 
@@ -532,6 +538,8 @@ public class StatusBar extends SystemUI implements DemoMode,
     protected NotificationLockscreenUserManager mLockscreenUserManager;
     protected NotificationRemoteInputManager mRemoteInputManager;
     private boolean mWallpaperSupported;
+
+    private boolean mBurnInProtectionEnabled;
 
     private VisualizerView mVisualizerView;
 
@@ -725,6 +733,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         tunerService.addTunable(this, SCREEN_BRIGHTNESS_MODE);
         tunerService.addTunable(this, STATUS_BAR_BRIGHTNESS_CONTROL);
         tunerService.addTunable(this, FORCE_SHOW_NAVBAR);
+        tunerService.addTunable(this, SYSTEMUI_BURNIN_PROTECTION);
 
         mDisplayManager = mContext.getSystemService(DisplayManager.class);
 
@@ -939,6 +948,11 @@ public class StatusBar extends SystemUI implements DemoMode,
                     mStatusBarWindow.setStatusBarView(mStatusBarView);
                     updateAreThereNotifications();
                     checkBarModes();
+                    if (mContext.getResources().getBoolean(
+                            com.android.internal.R.bool.config_enableBurnInProtection)) {
+                        mBurnInProtectionController = new BurnInProtectionController(mContext,
+                                this, mStatusBarView);
+                    }
                 }).getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.status_bar_container, new CollapsedStatusBarFragment(),
@@ -3942,6 +3956,9 @@ public class StatusBar extends SystemUI implements DemoMode,
 
             updateNotificationPanelTouchState();
             mStatusBarWindow.cancelCurrentTouch();
+            if (mBurnInProtectionController != null) {
+                mBurnInProtectionController.stopShiftTimer(mBurnInProtectionEnabled);
+            }
             if (mLaunchCameraOnFinishedGoingToSleep) {
                 mLaunchCameraOnFinishedGoingToSleep = false;
 
@@ -3990,6 +4007,9 @@ public class StatusBar extends SystemUI implements DemoMode,
                 mLaunchCameraWhenFinishedWaking = false;
             }
             updateScrimController();
+            if (mBurnInProtectionController != null) {
+                mBurnInProtectionController.startShiftTimer(mBurnInProtectionEnabled);
+            }
         }
     };
 
@@ -4881,6 +4901,16 @@ public class StatusBar extends SystemUI implements DemoMode,
             } else {
                 if (hasNavbar) {
                     mNavigationBarController.onDisplayRemoved(mDisplayId);
+                }
+            }
+        } else if (SYSTEMUI_BURNIN_PROTECTION.equals(key)) {
+            mBurnInProtectionEnabled = newValue != null && Integer.parseInt(newValue) == 1;
+            if (mBurnInProtectionController != null) {
+                if (mBurnInProtectionEnabled) {
+                    mBurnInProtectionController.startShiftTimer(true);
+                } else {
+                    // Forcefully disable it
+                    mBurnInProtectionController.stopShiftTimer(true);
                 }
             }
         }
