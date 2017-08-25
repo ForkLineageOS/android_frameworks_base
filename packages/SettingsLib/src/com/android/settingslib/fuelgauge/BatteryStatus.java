@@ -31,6 +31,7 @@ import static android.os.BatteryManager.EXTRA_STATUS;
 
 //dev-harsh1998 Port vooc charging status to Android R
 import static android.os.BatteryManager.EXTRA_VOOC_CHARGER;
+import static android.os.BatteryManager.EXTRA_OEM_FAST_CHARGER;
 
 import android.content.Context;
 import android.content.Intent;
@@ -64,9 +65,12 @@ public class BatteryStatus {
 
     // dev-harsh1998 port vooc charging to Android R fuel gauge
     public final boolean voocChargeStatus;
+    public final boolean oemFastChargeStatus;
+
     public BatteryStatus(int status, int level, int plugged, int health,
             int maxChargingCurrent, int maxChargingVoltage,
-            int maxChargingWattage, float temperature, boolean voocChargeStatus, boolean present) {
+            int maxChargingWattage, float temperature, boolean voocChargeStatus, boolean oemFastChargeStatus, boolean present) {
+
         this.status = status;
         this.level = level;
         this.plugged = plugged;
@@ -77,6 +81,7 @@ public class BatteryStatus {
         this.present = present;
         this.voocChargeStatus = voocChargeStatus;
         this.temperature = temperature;
+        this.oemFastChargeStatus = oemFastChargeStatus;
     }
 
     public BatteryStatus(Intent batteryChangedIntent) {
@@ -87,6 +92,7 @@ public class BatteryStatus {
         present = batteryChangedIntent.getBooleanExtra(EXTRA_PRESENT, true);
         voocChargeStatus = batteryChangedIntent.getBooleanExtra(EXTRA_VOOC_CHARGER, false);
         temperature = batteryChangedIntent.getIntExtra(EXTRA_TEMPERATURE, -1);
+        oemFastChargeStatus = batteryChangedIntent.getBooleanExtra(EXTRA_OEM_FAST_CHARGER, false);
 
         final int maxChargingMicroAmp = batteryChangedIntent.getIntExtra(EXTRA_MAX_CHARGING_CURRENT,
                 -1);
@@ -165,6 +171,9 @@ public class BatteryStatus {
      * @return the charing speed
      */
     public final int getChargingSpeed(Context context) {
+        if (oemFastChargeStatus) {
+                return CHARGING_FAST;
+        }
         final int slowThreshold = context.getResources().getInteger(
                 R.integer.config_chargingSlowlyThreshold);
         final int fastThreshold = context.getResources().getInteger(
