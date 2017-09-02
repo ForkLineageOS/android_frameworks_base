@@ -104,4 +104,6 @@ interface IPowerManager
     void rebootCustom(boolean confirm, String reason, boolean wait);
     void setKeyboardVisibility(boolean visible);
     void wakeUpWithProximityCheck(long time, int reason, String details, String opPackageName);
+    // Wakelock blocker
+    String getSeenWakeLocks();
 }
