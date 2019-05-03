@@ -54,8 +54,17 @@
     <!-- System fonts -->
     <java-symbol type="array" name="config_fontPackages" />
     <java-symbol type="string" name="fontservice_incompatible_font" />
-
     <!-- App Lock -->
     <java-symbol type="string" name="lockscreen_pattern_instructions" />
+
+  <!-- Pocket Lock -->
+  <java-symbol type="layout" name="pocket_lock_view_layout" />
+  <java-symbol type="id" name="pocket_hint_container" />
+  <java-symbol type="id" name="pocket_hint_image" />
+  <java-symbol type="id" name="pocket_hint_message" />
+
+  <!-- Pocket bridge -->
+  <java-symbol type="string" name="config_pocketBridgeSysfsInpocket" />
+    <java-symbol type="bool" name="config_pocketModeSupported" />
 
 </resources>
