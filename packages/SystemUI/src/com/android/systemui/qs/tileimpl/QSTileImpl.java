@@ -39,6 +39,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.UserHandle;
 import android.provider.Settings;
+import android.os.VibrationEffect;
 import android.service.quicksettings.Tile;
 import android.text.format.DateUtils;
 import android.util.ArraySet;
@@ -71,6 +72,7 @@ import com.android.systemui.qs.QSHost;
 import com.android.systemui.qs.QuickStatusBarHeader;
 import com.android.systemui.qs.logging.QSLogger;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
+import com.android.systemui.statusbar.VibratorHelper;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -147,6 +149,8 @@ public abstract class QSTileImpl<TState extends State> implements QSTile, Lifecy
      */
     abstract protected void handleUpdateState(TState state, Object arg);
 
+    private final VibratorHelper mVibratorHelper;
+
     /**
      * Declare the category of this tile.
      *
@@ -158,6 +162,7 @@ public abstract class QSTileImpl<TState extends State> implements QSTile, Lifecy
     protected QSTileImpl(QSHost host) {
         mHost = host;
         mContext = host.getContext();
+        mVibratorHelper = Dependency.get(VibratorHelper.class);
         mInstanceId = host.getNewInstanceId();
         mState = newTileState();
         mTmpState = newTileState();
@@ -239,6 +244,10 @@ public abstract class QSTileImpl<TState extends State> implements QSTile, Lifecy
 
     // safe to call from any thread
 
+    private void vibrateTile() {
+        mVibratorHelper.vibrate(VibrationEffect.EFFECT_CLICK);
+    }
+
     public void addCallback(Callback callback) {
         mHandler.obtainMessage(H.ADD_CALLBACK, callback).sendToTarget();
     }
@@ -254,6 +263,7 @@ public abstract class QSTileImpl<TState extends State> implements QSTile, Lifecy
     public void click() {
         if (handleClick(ACTION_QS_CLICK, QSEvent.QS_ACTION_CLICK, H.CLICK)) {
             mQSLogger.logTileClick(mTileSpec, mStatusBarStateController.getState(), mState.state);
+        vibrateTile();
         }
     }
 
@@ -261,6 +271,7 @@ public abstract class QSTileImpl<TState extends State> implements QSTile, Lifecy
         if (handleClick(ACTION_QS_SECONDARY_CLICK, QSEvent.QS_ACTION_SECONDARY_CLICK, H.SECONDARY_CLICK)) {
             mQSLogger.logTileSecondaryClick(mTileSpec, mStatusBarStateController.getState(),
                     mState.state);
+        vibrateTile();
         }
     }
 
