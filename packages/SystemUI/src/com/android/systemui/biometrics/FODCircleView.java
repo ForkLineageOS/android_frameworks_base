@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.hardware.biometrics.BiometricSourceType;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -74,6 +75,7 @@ public class FODCircleView extends ImageView {
     private boolean mIsBouncer;
     private boolean mIsDreaming;
     private boolean mIsCircleShowing;
+    private boolean mIsAuthenticated;
 
     private Handler mHandler;
 
@@ -124,6 +126,12 @@ public class FODCircleView extends ImageView {
             } else {
                 hide();
             }
+        }
+
+        @Override
+        public void onBiometricAuthenticated(int userId, BiometricSourceType biometricSourceType) {
+            super.onBiometricAuthenticated(userId, biometricSourceType);
+            mIsAuthenticated = true;
         }
 
         @Override
@@ -300,6 +308,10 @@ public class FODCircleView extends ImageView {
     }
 
     public void showCircle() {
+        if (mIsAuthenticated) {
+            return;
+        }
+
         mIsCircleShowing = true;
 
         setKeepScreenOn(true);
@@ -333,6 +345,8 @@ public class FODCircleView extends ImageView {
             // Ignore show calls when Keyguard password screen is being shown
             return;
         }
+
+        mIsAuthenticated = false;
 
         updatePosition();
 
