@@ -31,6 +31,7 @@
 
     <!-- Size of the FOD animation -->
     <dimen name="fod_animation_size">280dp</dimen>
+    <dimen name="fod_animation_offset">0dp</dimen>
 
     <!-- Custom padding size on biometric dialog -->
     <dimen name="fp_dialog_error_padding_top">16dp</dimen>
