@@ -60,13 +60,13 @@ public class BatteryStatus {
     public final int maxChargingVoltage;
     public final int maxChargingWattage;
     public final boolean present;
-    public final int temperature;
+    public final float temperature;
 
     // dev-harsh1998 port vooc charging to Android R fuel gauge
     public final boolean voocChargeStatus;
     public BatteryStatus(int status, int level, int plugged, int health,
             int maxChargingCurrent, int maxChargingVoltage,
-            int maxChargingWattage, int temperature, boolean voocChargeStatus, boolean present) {
+            int maxChargingWattage, float temperature, boolean voocChargeStatus, boolean present) {
         this.status = status;
         this.level = level;
         this.plugged = plugged;
