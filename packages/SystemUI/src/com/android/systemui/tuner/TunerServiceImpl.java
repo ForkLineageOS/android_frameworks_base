@@ -297,7 +297,7 @@ public class TunerServiceImpl extends TunerService {
                     isLineageGlobal(key) ? UserHandle.USER_ALL : mCurrentUser);
         }
         // Send the first state.
-        String value = DejankUtils.whitelistIpcs(() -> getValue(key));
+        String value = getValue(key);
         tunable.onTuningChanged(key, value);
     }
 
