@@ -3680,7 +3680,7 @@ public final class Settings {
          * @hide
          */
         public static final int END_BUTTON_BEHAVIOR_HOME = 0x1;
-
+    
         /**
          * END_BUTTON_BEHAVIOR value for "go to sleep".
          * @hide
@@ -4896,6 +4896,12 @@ public final class Settings {
          * @hide
          */
         public static final String QS_TILE_TITLE_VISIBILITY = "qs_tile_title_visibility";
+    
+        /**
+          * Screen-off FOD
+          * @hide
+          */
+         public static final String FOD_GESTURE = "fod_gesture";
 
         /**
          * IMPORTANT: If you add a new public settings you also have to add it to
