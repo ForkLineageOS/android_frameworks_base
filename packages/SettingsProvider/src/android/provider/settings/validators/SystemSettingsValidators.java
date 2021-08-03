@@ -224,5 +224,6 @@ public class SystemSettingsValidators {
                 });
         VALIDATORS.put(System.SCREENSHOT_SOUND, BOOLEAN_VALIDATOR);
         VALIDATORS.put(System.QS_MEDIA_PLAYER, BOOLEAN_VALIDATOR);
+		VALIDATORS.put(System.FOD_GESTURE, BOOLEAN_VALIDATOR);
     }
 }
