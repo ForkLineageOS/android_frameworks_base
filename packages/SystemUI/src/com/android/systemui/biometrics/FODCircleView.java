@@ -65,10 +65,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class FODCircleView extends ImageView implements TunerService.Tunable {
+	private static final int FADE_ANIM_DURATION = 200;
     private static final String DOZE_INTENT = "com.android.systemui.doze.pulse";
     private static final String FOD_GESTURE = "system:" + Settings.System.FOD_GESTURE;
-    private static final int FADE_ANIM_DURATION = 250;
-
+    
     private final int mPositionX;
     private final int mPositionY;
     private final int mSize;
@@ -93,7 +93,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
     private boolean mIsDreaming;
     private boolean mIsKeyguard;
     private boolean mTouchedOutside;
-	
+
 	private boolean mDozeEnabled;
     private boolean mFodGestureEnable;
     private boolean mPressPending;
@@ -121,7 +121,6 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
                 // Keyguard requires strong authentication (not biometrics)
                 return;
             }
-
             if (mFodGestureEnable && !mScreenTurnedOn) {
                 if (mDozeEnabled) {
                     mHandler.post(() -> mContext.sendBroadcast(new Intent(DOZE_INTENT)));
@@ -139,8 +138,9 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
         @Override
         public void onFingerUp() {
             mHandler.post(() -> hideCircle());
-			if (mPressPending) {
+            if (mPressPending) {
                 mPressPending = false;
+            }
         }
     };
 
@@ -241,7 +241,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
             if (mUpdateMonitor.isFingerprintDetectionRunning() && !mFodGestureEnable) {
                 show();
             }
-			if (mPressPending) {
+            if (mPressPending) {
                 mHandler.post(() -> showCircle());
                 mPressPending = false;
             }
@@ -305,8 +305,8 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
 
         mPaintFingerprintBackground.setColor(res.getColor(R.color.config_fodColorBackground));
         mPaintFingerprintBackground.setAntiAlias(true);
-		
-		mPowerManager = context.getSystemService(PowerManager.class);
+    
+        mPowerManager = context.getSystemService(PowerManager.class);
         mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                  FODCircleView.class.getSimpleName());
 
@@ -363,8 +363,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
         mUpdateMonitor.registerCallback(mMonitorCallback);
 
         mFODAnimation = new FODAnimation(context, mPositionX, mPositionY);
-		
-		Dependency.get(TunerService.class).addTunable(this, FOD_GESTURE,
+        Dependency.get(TunerService.class).addTunable(this, FOD_GESTURE,
                 Settings.Secure.DOZE_ENABLED);
     }
 
@@ -374,7 +373,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
             mFodGestureEnable = TunerService.parseIntegerSwitch(newValue, false);
         } else {
             mDozeEnabled = TunerService.parseIntegerSwitch(newValue, true);
-        }
+        }    
     }
 
     @Override
