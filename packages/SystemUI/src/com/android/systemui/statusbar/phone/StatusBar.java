@@ -2103,7 +2103,13 @@ public class StatusBar extends SystemUI implements DemoMode,
     public NotificationPresenter getPresenter() {
         return mPresenter;
     }
-
+	
+	private void setHideArrowForBackGesture() {
+        if (getNavigationBarView() != null) {
+            getNavigationBarView().updateBackArrowForGesture();
+        }
+    }
+	
     @VisibleForTesting
     void setBarStateForTest(int state) {
         mState = state;
@@ -2167,6 +2173,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_PANEL_BG_USE_NEW_TINT),
                     false, this, UserHandle.USER_ALL);
+			resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.HIDE_BACK_ARROW_GESTURE),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -2185,12 +2194,15 @@ public class StatusBar extends SystemUI implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.QS_PANEL_BG_USE_NEW_TINT))) {
                 mQSPanel.getHost().reloadAllTiles();
+			} else if (uri.equals(Settings.Secure.getUriFor(
+                    Settings.Secure.HIDE_BACK_ARROW_GESTURE))) {
+                setHideArrowForBackGesture();
             }
         }
 
         public void update() {
             setPulseOnNewTracks();
-
+			setHideArrowForBackGesture();
             setQsRowsColumns();
             updateQsPanelResources();
         }

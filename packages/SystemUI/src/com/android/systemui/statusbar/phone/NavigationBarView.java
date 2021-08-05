@@ -828,6 +828,10 @@ public class NavigationBarView extends FrameLayout implements
         updatePanelSystemUiStateFlags();
     }
 
+	public void updateBackArrowForGesture() {
+        mEdgeBackGestureHandler.setBackArrowVisibility();
+    }
+	
     public void updateDisabledSystemUiStateFlags() {
         int displayId = mContext.getDisplayId();
 
