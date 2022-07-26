@@ -16,6 +16,7 @@
 
 package com.android.keyguard;
 import static com.android.keyguard.KeyguardAbsKeyInputView.MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.view.View;
 import com.android.internal.util.LatencyTracker;
